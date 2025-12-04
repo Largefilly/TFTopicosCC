@@ -4,8 +4,7 @@ from typing import Dict, List
 from .config import SimulationConfig
 from .model import TrafficModel
 
-# (Si ya tenías SCENARIOS y funciones run_scenario/run_all_scenarios,
-# puedes dejarlas. Aquí mantengo run_simulation y añado run_full_day.)
+
 
 def run_simulation(
     control_mode: str = "fixed",
@@ -15,10 +14,7 @@ def run_simulation(
     seed: int = 42,
     verbose: bool = True,
 ) -> Dict[str, float]:
-    """
-    Corre una simulación simple con parámetros configurables y devuelve el resumen.
-    Modo sin hora-del-día (tasas fijas).
-    """
+
     config = SimulationConfig(
         control_mode=control_mode,
         arrival_rate_ns=arrival_rate_ns,
@@ -48,12 +44,7 @@ def run_full_day(
     seed: int = 42,
     verbose: bool = True,
 ) -> Dict[str, float]:
-    """
-    Simula UN DÍA COMPLETO (24 horas) usando arrival rates que dependen de la hora del día.
 
-    - seconds_per_tick: cuántos segundos reales representa 1 tick de simulación.
-      Ejemplo: 10 s -> 24h = 8640 ticks.
-    """
     # 24 horas * 3600 s / seconds_per_tick
     ticks_per_day = int(24 * 3600 / seconds_per_tick)
 

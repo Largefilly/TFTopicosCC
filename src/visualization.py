@@ -11,11 +11,7 @@ class TrafficVisualizer:
         height: int = 800,
         scale: float = 8.0,
     ):
-        """
-        model: instancia de TrafficModel
-        width, height: tamaño de la ventana
-        scale: cuántos píxeles representa 1 unidad de distancia del modelo
-        """
+        
         self.model = model
         self.width = width
         self.height = height
@@ -72,7 +68,6 @@ class TrafficVisualizer:
     # ---------------- DIBUJO PRINCIPAL ----------------
 
     def draw(self):
-        """Dibuja un frame completo."""
         self.screen.fill(self.COLOR_BACKGROUND)
 
         # 1. Vías + pasos de cebra + líneas de stop
@@ -119,9 +114,7 @@ class TrafficVisualizer:
         self._draw_crosswalks_and_stop_lines()
 
     def _draw_crosswalks_and_stop_lines(self):
-        """Dibuja pasos de cebra más cortos (no formando un cuadrado completo)
-        y la línea de stop detrás de cada uno.
-        """
+
         stripe_color = self.COLOR_WHITE
         stripe_width = 8
         stripe_gap = 6
@@ -213,11 +206,6 @@ class TrafficVisualizer:
             )
 
     def _draw_traffic_light(self):
-        """
-        Dibuja dos semáforos con tres luces (rojo, amarillo, verde)
-        para los flujos NS y EW, encendiendo la luz correspondiente
-        según la fase del modelo.
-        """
         tl = self.model.traffic_light
         phase = tl.phase
         current_dir = tl.current_green_direction  # "NS" o "EW"
@@ -267,7 +255,6 @@ class TrafficVisualizer:
         ew_cy = self.cy - self.road_width // 2 - 25
 
         def draw_head(cx, cy, lights):
-            """Dibuja una cabeza de semáforo (caja + 3 focos)."""
             # Caja
             pygame.draw.rect(
                 self.screen,
@@ -316,7 +303,6 @@ class TrafficVisualizer:
             pygame.draw.rect(self.screen, color, rect)
 
     def _draw_hud(self):
-        """Dibuja texto con info simple + resumen diario de fixed vs adaptive, incluyendo horas punta."""
         font = pygame.font.SysFont("Arial", 18)
 
         # Hora simulada (según el modelo que estamos visualizando)
@@ -457,13 +443,6 @@ class TrafficVisualizer:
     # ---------------- UTILIDADES ----------------
 
     def _vehicle_to_screen(self, vehicle):
-        """
-        Convierte la distancia + dirección del vehículo en coordenadas (x, y) en pantalla.
-
-        distance = 0  -> justo en la LÍNEA DE STOP (antes del paso de cebra)
-        distance > 0  -> más atrás en el carril
-        distance < 0  -> ya cruzó la línea de stop y va saliendo.
-        """
         d = vehicle.distance
         s = self.scale
         offset = self.stop_line_offset

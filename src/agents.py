@@ -11,10 +11,7 @@ class Direction(Enum):
 
 
 class VehicleAgent:
-    """
-    Representa un vehículo que se aproxima a la intersección
-    como una distancia en línea recta hacia el cruce.
-    """
+    
     _id_counter = 0
 
     def __init__(self, direction: Direction, start_time: int, start_distance: float):
@@ -26,15 +23,7 @@ class VehicleAgent:
         self.exit_time = None
 
     def step(self, model: "TrafficModel"):
-        """
-        Actualiza la posición del vehículo.
-
-        Fases:
-        - distance > 0  -> se acerca a la línea de stop, respetando espacio con el de adelante.
-        - distance ~ 0  -> está en la línea de stop; si hay verde, empieza a cruzar.
-        - distance < 0  -> ya está cruzando / saliendo por el otro lado; sigue moviéndose
-                           hasta distancia <= -post_cross_distance y recién desaparece.
-        """
+        
         if self.exit_time is not None:
             return
 
@@ -85,10 +74,7 @@ class TrafficLightPhase(Enum):
 
 
 class TrafficLightAgent:
-    """
-    Controla el semáforo en la intersección.
-    Tiene dos modos: 'fixed' y 'adaptive'.
-    """
+    
     def __init__(self, config, rng: random.Random):
         self.config = config
         self.rng = rng
@@ -117,12 +103,7 @@ class TrafficLightAgent:
             self._switch_to_yellow()
 
     def _handle_adaptive_cycle(self, model: "TrafficModel"):
-        """
-        Regla adaptativa muy simple:
-        - Respetar un mínimo de verde (green_min).
-        - Después, si la cola del sentido opuesto es mucho mayor, cambiamos antes.
-        - Nunca exceder green_max.
-        """
+        
         if self.time_in_phase < self.config.green_min:
             return  # aún no evaluamos cambiar
 
