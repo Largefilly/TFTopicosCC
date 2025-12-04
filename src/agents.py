@@ -18,7 +18,7 @@ class VehicleAgent:
         VehicleAgent._id_counter += 1
         self.id = VehicleAgent._id_counter
         self.direction = direction
-        self.distance = start_distance  # distancia hasta la intersección (>= 0)
+        self.distance = start_distance 
         self.start_time = start_time
         self.exit_time = None
 
@@ -29,34 +29,27 @@ class VehicleAgent:
 
         cfg = model.config
 
-        # 1) Si ya cruzó (distance < 0): sigue saliendo hasta desaparecer
         if self.distance < 0.0:
             step_distance = cfg.vehicle_speed
-            self.distance -= step_distance  # se va haciendo más negativo
+            self.distance -= step_distance 
 
-            # Cuando ya "salió" lo suficiente, lo sacamos del sistema
             if self.distance <= -cfg.post_cross_distance:
                 self.exit_time = model.time
                 model.mark_vehicle_exited(self)
             return
 
-        # 2) Si está en la línea de stop (distance ~ 0)
         if math.isclose(self.distance, 0.0, abs_tol=1e-6):
             if model.traffic_light.can_cross(self.direction):
-                # Semáforo en verde: entra a la intersección (pasa a distance < 0)
                 step_distance = min(cfg.vehicle_speed, cfg.post_cross_distance)
                 self.distance -= step_distance
             else:
-                # Luz roja: se queda quieto en la línea de stop
                 return
         else:
-            # 3) Fase de acercamiento (distance > 0): respeta al de adelante
             step_distance = min(cfg.vehicle_speed, self.distance)
             desired_distance = self.distance - step_distance
 
             leading_dist = model.get_leading_vehicle_distance(self)
             if leading_dist is None:
-                # Soy el primero de la cola -> puedo llegar hasta 0
                 min_allowed = 0.0
             else:
                 min_allowed = leading_dist + cfg.min_vehicle_gap
@@ -105,13 +98,11 @@ class TrafficLightAgent:
     def _handle_adaptive_cycle(self, model: "TrafficModel"):
         
         if self.time_in_phase < self.config.green_min:
-            return  # aún no evaluamos cambiar
+            return 
 
-        # Medir colas
         queue_ns = model.get_queue_size_ns()
         queue_ew = model.get_queue_size_ew()
 
-        # ¿estamos en verde NS o EW?
         if self.current_green_direction == "NS":
             my_queue = queue_ns
             other_queue = queue_ew
@@ -119,12 +110,10 @@ class TrafficLightAgent:
             my_queue = queue_ew
             other_queue = queue_ns
 
-        # Regla 1: si el opuesto tiene mucha más cola, cambiar
-        if other_queue > my_queue + 3:  # umbral arbitrario, luego lo puedes tunear
+        if other_queue > my_queue + 3:  
             self._switch_to_yellow()
             return
 
-        # Regla 2: si hemos alcanzado el máximo, cambiar sí o sí
         if self.time_in_phase >= self.config.green_max:
             self._switch_to_yellow()
 
@@ -139,7 +128,6 @@ class TrafficLightAgent:
 
     def can_cross(self, direction: Direction) -> bool:
         if self.phase == TrafficLightPhase.YELLOW:
-            # En amarillo asumimos que ya no se inicia el cruce
             return False
 
         if self.phase == TrafficLightPhase.NS_GREEN:
